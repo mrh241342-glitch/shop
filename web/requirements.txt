@@ -1,0 +1,5 @@
+fastapi
+uvicorn
+authlib
+Pillow
+python-multipart

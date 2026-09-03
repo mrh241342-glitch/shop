@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>VISMYTH - Electronics & More</title>
+
+    <link rel="stylesheet" href="/static/home/home.css">
+    <link rel="icon" href="/static/images/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/static/images/favicon.ico" type="image/x-icon">
+</head>
+
+<body>
+
+    <div class="top-strip">
+        Free Delivery on orders above ₹499 &nbsp; | &nbsp; Easy Returns &nbsp; | &nbsp; Secure Payments
+    </div>
+
+
+    <header class="header">
+
+        <div class="logo-box">
+            <img src="/static/images/logo.png" alt="VISMYTH Logo" style="height:45px; width:auto; display:block;">
+        </div>
+
+
+        <!-- Location with dropdown options -->
+        <div class="location" id="locationContainer">
+            <div class="location-icon">⌖</div>
+            <div class="location-text">
+                <small>Deliver to</small>
+                <strong id="locationDisplay">Select Location</strong>
+            </div>
+            <div class="location-dropdown" id="locationDropdown">
+                <div class="location-option" onclick="event.stopPropagation(); getUserLocation()">
+                    <span class="location-option-icon">📍</span>
+                    <div class="location-option-text">
+                        <strong>Your Location</strong>
+                        <small>Use GPS to detect your current location</small>
+                    </div>
+                </div>
+                <div class="location-option" onclick="event.stopPropagation(); openLocationModal()">
+                    <span class="location-option-icon">✏️</span>
+                    <div class="location-option-text">
+                        <strong>Enter Location</strong>
+                        <small>Manually enter your city or address</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="search-area">
+
+            <select id="searchCategory">
+
+                <option value="all">All</option>
+                <option value="headphones">Headphones</option>
+                <option value="smartwatch">Smartwatches</option>
+                <option value="speaker">Speakers</option>
+                <option value="gaming">Gaming</option>
+                <option value="accessories">Accessories</option>
+
+            </select>
+
+
+            <input type="text" id="searchInput" placeholder="Search for products, brands and more..."
+                autocomplete="off">
+
+            <!-- NEW: Suggestions container -->
+            <div id="searchSuggestions" class="search-suggestions"></div>
+
+            <button class="search-btn" onclick="searchProducts()">
+                🔍
+            </button>
+
+        </div>
+
+
+        <div class="header-actions">
+
+            <div class="header-action account-action" id="accountAction" onclick="handleAccountClick()">
+
+                <small id="accountSmall">
+                    Hello, Guest
+                </small>
+
+                <strong id="accountName">
+                    Account
+                </strong>
+
+            </div>
+
+
+            <div class="header-action" onclick="handleOrdersClick()">
+
+                <small>Your</small>
+
+                <strong>
+                    Orders
+                </strong>
+
+            </div>
+
+
+            <div class="header-action cart-action" onclick="openCart()">
+
+                🛒
+
+                <span class="cart-count" id="cartCount">
+                    0
+                </span>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <nav class="category-nav">
+
+        <a href="#" onclick="filterCategory('all'); return false;">
+            All
+        </a>
+
+        <a href="#" onclick="filterCategory('electronics'); return false;">
+            Electronics
+        </a>
+
+        <a href="#" onclick="filterCategory('headphones'); return false;">
+            Headphones
+        </a>
+
+        <a href="#" onclick="filterCategory('smartwatch'); return false;">
+            Smartwatches
+        </a>
+
+        <a href="#" onclick="filterCategory('speaker'); return false;">
+            Speakers
+        </a>
+
+        <a href="#" onclick="filterCategory('gaming'); return false;">
+            Gaming
+        </a>
+
+        <a href="#" onclick="filterCategory('accessories'); return false;">
+            Accessories
+        </a>
+
+        <a href="#" onclick="showToast('Deals section coming soon'); return false;">
+            Deals
+        </a>
+
+        <a href="#" onclick="showToast('New Arrivals coming soon'); return false;">
+            New Arrivals
+        </a>
+
+        <a href="#" onclick="showToast('Best Sellers coming soon'); return false;">
+            Best Sellers
+        </a>
+
+    </nav>
+
+
+    <main class="page">
+
+
+        <!-- ========== SEARCH HEADER (hidden by default) ========== -->
+        <div id="searchHeader" class="search-header" style="display:none;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                <h2 id="searchResultTitle">Search Results for "<span id="searchQueryDisplay"></span>"</h2>
+                <a href="/" class="clear-search">← Back to Home</a>
+            </div>
+        </div>
+
+
+        <!-- ... (all existing content up to the hero section) ... -->
+
+        <section class="hero" id="heroSection">
+            <div class="hero-carousel" id="heroCarousel">
+                <!-- Banners injected by JavaScript -->
+            </div>
+            <div class="carousel-dots" id="carouselDots"></div>
+            <button class="carousel-arrow prev" onclick="prevSlide()">❮</button>
+            <button class="carousel-arrow next" onclick="nextSlide()">❯</button>
+        </section>
+
+        <!-- ... (rest of home.html unchanged) ... -->
+
+
+        <section class="section" id="categoriesSection">
+
+            <div class="section-header">
+
+                <h2>
+                    Shop by Category
+                </h2>
+
+                <a class="see-all" href="#" onclick="filterCategory('all'); return false;">
+                    VIEW ALL
+                </a>
+
+            </div>
+
+
+            <div class="category-grid">
+
+
+                <div class="category-card" onclick="filterCategory('headphones')">
+
+                    <div class="category-image">
+                        🎧
+                    </div>
+
+                    <h3>
+                        Headphones
+                    </h3>
+
+                    <p>
+                        From ₹999
+                    </p>
+
+                </div>
+
+
+                <div class="category-card" onclick="filterCategory('smartwatch')">
+
+                    <div class="category-image">
+                        ⌚
+                    </div>
+
+                    <h3>
+                        Smartwatches
+                    </h3>
+
+                    <p>
+                        From ₹1,499
+                    </p>
+
+                </div>
+
+
+                <div class="category-card" onclick="filterCategory('speaker')">
+
+                    <div class="category-image">
+                        🔊
+                    </div>
+
+                    <h3>
+                        Speakers
+                    </h3>
+
+                    <p>
+                        From ₹899
+                    </p>
+
+                </div>
+
+
+                <div class="category-card" onclick="filterCategory('accessories')">
+
+                    <div class="category-image">
+                        🔌
+                    </div>
+
+                    <h3>
+                        Accessories
+                    </h3>
+
+                    <p>
+                        From ₹299
+                    </p>
+
+                </div>
+
+
+                <div class="category-card" onclick="filterCategory('gaming')">
+
+                    <div class="category-image">
+                        🎮
+                    </div>
+
+                    <h3>
+                        Gaming
+                    </h3>
+
+                    <p>
+                        From ₹799
+                    </p>
+
+                </div>
+
+
+                <div class="category-card">
+
+                    <div class="category-image">
+                        💻
+                    </div>
+
+                    <h3>
+                        Laptops
+                    </h3>
+
+                    <p>
+                        Coming Soon
+                    </p>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+        <div class="deal-banner" id="dealBanner">
+
+            <div>
+
+                <h2>
+                    Deals of the Day
+                </h2>
+
+                <p>
+                    Grab limited-time offers before they disappear.
+                </p>
+
+            </div>
+
+
+            <button class="deal-button" onclick="scrollToProducts()">
+                VIEW DEALS
+            </button>
+
+        </div>
+
+
+        <section class="section" id="productsSection">
+
+            <div class="section-header">
+
+                <div>
+
+                    <h2 id="productTitle">
+                        Best Deals on Electronics
+                    </h2>
+
+                </div>
+
+
+                <select id="sortProducts" onchange="sortProducts()">
+
+                    <option value="default">
+                        Sort By
+                    </option>
+
+                    <option value="low">
+                        Price: Low to High
+                    </option>
+
+                    <option value="high">
+                        Price: High to Low
+                    </option>
+
+                    <option value="rating">
+                        Customer Rating
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="product-grid" id="productGrid"></div>
+
+        </section>
+
+
+        <div class="two-column" id="featuresSection">
+
+
+            <div class="feature-box">
+
+                <h2>
+                    Why Shop With VISMYTH?
+                </h2>
+
+
+                <div class="feature-items">
+
+
+                    <div class="feature-item">
+
+                        <div class="icon">
+                            🚚
+                        </div>
+
+                        <strong>
+                            Fast Delivery
+                        </strong>
+
+                        <span>
+                            Quick doorstep delivery
+                        </span>
+
+                    </div>
+
+
+                    <div class="feature-item">
+
+                        <div class="icon">
+                            🔒
+                        </div>
+
+                        <strong>
+                            Secure Payment
+                        </strong>
+
+                        <span>
+                            Safe & trusted checkout
+                        </span>
+
+                    </div>
+
+
+                    <div class="feature-item">
+
+                        <div class="icon">
+                            ↩
+                        </div>
+
+                        <strong>
+                            Easy Returns
+                        </strong>
+
+                        <span>
+                            Simple return process
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+            <div class="feature-box">
+
+                <h2>
+                    VISMYTH Promise
+                </h2>
+
+
+                <div class="feature-items">
+
+
+                    <div class="feature-item">
+
+                        <div class="icon">
+                            ✓
+                        </div>
+
+                        <strong>
+                            Quality Products
+                        </strong>
+
+                        <span>
+                            Carefully selected products
+                        </span>
+
+                    </div>
+
+
+                    <div class="feature-item">
+
+                        <div class="icon">
+                            ₹
+                        </div>
+
+                        <strong>
+                            Great Prices
+                        </strong>
+
+                        <span>
+                            Competitive everyday pricing
+                        </span>
+
+                    </div>
+
+
+                    <div class="feature-item">
+
+                        <div class="icon">
+                            ★
+                        </div>
+
+                        <strong>
+                            Customer First
+                        </strong>
+
+                        <span>
+                            Support when you need it
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </main>
+
+
+    <footer>
+
+
+        <div class="footer-main">
+
+
+            <div class="footer-column">
+
+                <h4>
+                    About VISMYTH
+                </h4>
+
+                <a href="#">
+                    About Us
+                </a>
+
+                <a href="#">
+                    Contact Us
+                </a>
+
+                <a href="#">
+                    Careers
+                </a>
+
+                <a href="#">
+                    Press
+                </a>
+
+            </div>
+
+
+            <div class="footer-column">
+
+                <h4>
+                    Customer Service
+                </h4>
+
+                <a href="#">
+                    Help Center
+                </a>
+
+                <a href="#">
+                    Returns
+                </a>
+
+                <a href="#">
+                    Shipping
+                </a>
+
+                <a href="#">
+                    Cancellation
+                </a>
+
+            </div>
+
+
+            <div class="footer-column">
+
+                <h4>
+                    Policy
+                </h4>
+
+                <a href="/privacy">Privacy Policy</a>
+                <a href="/terms">Terms of Use</a>
+                <a href="/refund">Refund Policy</a>
+                <a href="/security">Security</a>
+
+            </div>
+
+
+            <div class="footer-column">
+
+                <h4>
+                    Categories
+                </h4>
+
+                <a href="#">
+                    Electronics
+                </a>
+
+                <a href="#">
+                    Gaming
+                </a>
+
+                <a href="#">
+                    Accessories
+                </a>
+
+                <a href="#">
+                    Smartwatches
+                </a>
+
+            </div>
+
+
+            <div class="footer-column">
+
+                <h4>
+                    Connect
+                </h4>
+
+                <a href="https://www.instagram.com/vismyth_shop?igsi=MWNwajgyZWlreXA3Yw==">
+                    Instagram
+                </a>
+
+                <a href="https://youtube.com/@vismyth_shop?si=34_5_GNyF-RJzsjU">
+                    YouTube
+                </a>
+
+                <a href="#">
+                    Facebook
+                </a>
+
+                <a href="#">
+                    X
+                </a>
+
+            </div>
+
+
+        </div>
+
+
+        <div class="footer-bottom">
+
+            © 2026 VISMYTH. All Rights Reserved.
+
+        </div>
+
+
+    </footer>
+
+
+    <div class="overlay" id="overlay" onclick="closeCart()"></div>
+
+
+    <aside class="cart-drawer" id="cartDrawer">
+
+
+        <div class="cart-header">
+
+            <strong>
+                Shopping Cart
+            </strong>
+
+
+            <button class="close-cart" onclick="closeCart()">
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="cart-items" id="cartItems">
+
+            <div class="empty-cart">
+
+                <h3>
+                    Your cart is empty
+                </h3>
+
+                <p>
+                    Add some products to get started.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="cart-footer">
+
+
+            <div class="cart-total">
+
+                <span>
+                    Total
+                </span>
+
+                <span id="cartTotal">
+                    ₹0
+                </span>
+
+            </div>
+
+
+            <button class="checkout-btn" onclick="checkout()">
+                Proceed to Checkout
+            </button>
+
+
+        </div>
+
+
+    </aside>
+
+
+    <div class="toast" id="toast"></div>
+
+
+    <script src="/static/home/home.js"></script>
+
+</body>
+
+</html>
