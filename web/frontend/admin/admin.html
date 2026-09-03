@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VISMYTH Admin Panel</title>
+    <link rel="stylesheet" href="/static/admin/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="/static/images/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/static/images/favicon.ico" type="image/x-icon">
+</head>
+
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-screen">
+        <div class="login-container">
+            <div class="login-box">
+                <div class="login-header">
+                    <div class="login-logo">🛡️ VISMYTH</div>
+                    <div class="login-subtitle">Admin Panel</div>
+                </div>
+                <form id="loginForm" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" id="adminEmail" value="admin@vismyth.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="adminPassword" value="Admin@2026" required>
+                    </div>
+                    <button type="submit" class="login-btn">
+                        <i class="fas fa-sign-in-alt"></i> Login to Admin
+                    </button>
+                    <div id="loginError" class="login-error"></div>
+                </form>
+                <div class="login-footer">
+                    <a href="/">← Back to Store</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Admin Panel -->
+    <div id="adminPanel" class="admin-panel" style="display: none;">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">🛡️ VISMYTH</div>
+                <div class="sidebar-subtitle">Admin Panel</div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="active" data-page="dashboard">
+                    <i class="fas fa-chart-pie"></i> Dashboard
+                </a>
+                <a href="#" data-page="products">
+                    <i class="fas fa-box"></i> Products
+                </a>
+                <a href="#" data-page="categories">
+                    <i class="fas fa-tags"></i> Categories
+                </a>
+                <a href="#" data-page="inventory">
+                    <i class="fas fa-warehouse"></i> Inventory
+                </a>
+                <a href="#" data-page="orders">
+                    <i class="fas fa-shopping-cart"></i> Orders
+                </a>
+                <a href="#" data-page="users">
+                    <i class="fas fa-users"></i> Customers
+                </a>
+                <a href="#" data-page="payments">
+                    <i class="fas fa-credit-card"></i> Payments
+                </a>
+                <a href="#" data-page="locations">
+                    <i class="fas fa-map-marker-alt"></i> Locations
+                </a>
+                <a href="#" data-page="banner">
+                    <i class="fas fa-image"></i> Banner
+                </a>
+                <!-- NEW: Settings & Activity Log -->
+                <a href="#" data-page="settings">
+                    <i class="fas fa-cog"></i> Settings
+                </a>
+                <a href="#" data-page="activity">
+                    <i class="fas fa-history"></i> Activity Log
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <button onclick="adminLogout()">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Top Header -->
+            <div class="top-header">
+                <div style="display:flex;align-items:center;gap:15px;">
+                    <button class="menu-toggle" onclick="toggleMenu()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1>Dashboard</h1>
+                </div>
+                <div class="top-header-right">
+                    <div class="admin-badge">
+                        <i class="fas fa-shield-alt"></i> Admin
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page: Dashboard -->
+            <div id="page-dashboard" class="page-content active">
+                <div class="dashboard-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-number" id="statUsers">0</div>
+                        <div class="stat-label">Total Users</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📦</div>
+                        <div class="stat-number" id="statProducts">0</div>
+                        <div class="stat-label">Total Products</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🛒</div>
+                        <div class="stat-number" id="statOrders">0</div>
+                        <div class="stat-label">Total Orders</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">💰</div>
+                        <div class="stat-number" id="statRevenue">₹0</div>
+                        <div class="stat-label">Total Revenue</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📍</div>
+                        <div class="stat-number" id="statLocations">0</div>
+                        <div class="stat-label">Saved Locations</div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="dashboard-card">
+                        <h3>Recent Orders</h3>
+                        <div id="recentOrders"></div>
+                    </div>
+                    <div class="dashboard-card">
+                        <h3>Recent Users</h3>
+                        <div id="recentUsers"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page: Products -->
+            <div id="page-products" class="page-content">
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3>All Products</h3>
+                        <div class="table-actions">
+                            <button class="btn btn-primary" onclick="showAddProductModal()">
+                                <i class="fas fa-plus"></i> Add Product
+                            </button>
+                        </div>
+                    </div>
+                    <!-- NEW: Search and filter bar -->
+                    <div class="search-bar">
+                        <input type="text" id="productSearchInput" placeholder="Search products...">
+                        <select id="productCategoryFilter">
+                            <option value="">All Categories</option>
+                        </select>
+                        <select id="productStockFilter">
+                            <option value="">All Stock</option>
+                            <option value="in_stock">In Stock (>10)</option>
+                            <option value="low_stock">Low Stock (1-10)</option>
+                            <option value="out_of_stock">Out of Stock</option>
+                        </select>
+                        <button class="btn btn-danger" onclick="bulkDeleteProducts()">Bulk Delete</button>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" id="selectAllProducts" onclick="toggleAllCheckboxes('product', this.checked)"></th>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Category</th>
+                                <th>Price</th>
+                                <th>Stock</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productsTableBody"></tbody>
+                    </table>
+                    <div id="productsPagination"></div>
+                </div>
+            </div>
+
+            <!-- Page: Categories -->
+            <div id="page-categories" class="page-content">
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3>All Categories</h3>
+                        <div class="table-actions">
+                            <button class="btn btn-primary" onclick="showAddCategoryModal()">
+                                <i class="fas fa-plus"></i> Add Category
+                            </button>
+                        </div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Category Name</th>
+                                <th>Products</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="categoriesTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Page: Inventory -->
+            <div id="page-inventory" class="page-content">
+                <div class="dashboard-stats" style="margin-bottom:25px;">
+                    <div class="stat-card">
+                        <div class="stat-icon">📦</div>
+                        <div class="stat-number" id="invTotalProducts">0</div>
+                        <div class="stat-label">Total Products</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📊</div>
+                        <div class="stat-number" id="invTotalStock">0</div>
+                        <div class="stat-label">Total Stock</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⚠️</div>
+                        <div class="stat-number" id="invLowStock">0</div>
+                        <div class="stat-label">Low Stock</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🚫</div>
+                        <div class="stat-number" id="invOutOfStock">0</div>
+                        <div class="stat-label">Out of Stock</div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="dashboard-card">
+                        <h3>⚠️ Low Stock Products</h3>
+                        <div id="lowStockProducts"></div>
+                    </div>
+                    <div class="dashboard-card">
+                        <h3>🚫 Out of Stock Products</h3>
+                        <div id="outOfStockProducts"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page: Orders -->
+            <div id="page-orders" class="page-content">
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3>All Orders</h3>
+                    </div>
+                    <!-- NEW: Search and filter bar -->
+                    <div class="search-bar">
+                        <input type="text" id="orderSearchInput" placeholder="Search by Order ID or Customer...">
+                        <select id="orderStatusFilter">
+                            <option value="">All Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="confirmed">Confirmed</option>
+                            <option value="shipped">Shipped</option>
+                            <option value="delivered">Delivered</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                        <button class="btn btn-primary" onclick="bulkUpdateOrders()">Bulk Update Status</button>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" id="selectAllOrders" onclick="toggleAllCheckboxes('order', this.checked)"></th>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Total</th>
+                                <th>Items</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ordersTableBody"></tbody>
+                    </table>
+                    <div id="ordersPagination"></div>
+                </div>
+            </div>
+
+            <!-- Page: Users -->
+            <div id="page-users" class="page-content">
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3>All Customers</h3>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Provider</th>
+                                <th>Joined</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Page: Payments -->
+            <div id="page-payments" class="page-content">
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3>Payment Proofs</h3>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Customer</th>
+                                <th>Amount</th>
+                                <th>Method</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="paymentsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Page: Locations -->
+            <div id="page-locations" class="page-content">
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3>User Locations</h3>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>City</th>
+                                <th>State</th>
+                                <th>Country</th>
+                                <th>Coordinates</th>
+                                <th>Last Updated</th>
+                            </tr>
+                        </thead>
+                        <tbody id="locationsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Page: Banner -->
+            <div id="page-banner" class="page-content">
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3>Manage Banners</h3>
+                        <div class="table-actions">
+                            <button class="btn btn-primary" onclick="showAddBannerModal()">
+                                <i class="fas fa-plus"></i> Add Banner
+                            </button>
+                        </div>
+                    </div>
+                    <div id="bannerList">
+                        <p style="padding:20px;color:#999;text-align:center;">Loading banners...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Banner Modal (Add/Edit) -->
+            <div id="bannerModal" class="modal-overlay">
+                <div class="modal" style="max-width:700px;">
+                    <div class="modal-header">
+                        <h2 id="bannerModalTitle">Add Banner</h2>
+                        <button class="modal-close" onclick="closeBannerModal()">×</button>
+                    </div>
+                    <form id="bannerForm" onsubmit="return false;">
+                        <input type="hidden" id="bannerId">
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label>Title *</label>
+                                <input type="text" id="bannerTitleInput" required placeholder="e.g. Summer Sale">
+                            </div>
+                            <div class="form-group">
+                                <label>Description</label>
+                                <textarea id="bannerDescriptionInput" rows="2" placeholder="Short description"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Image URL</label>
+                                <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+                                    <input type="text" id="bannerImageUrlInput" placeholder="https://... or /uploads/...">
+                                    <input type="file" id="bannerImageFileInput" accept="image/*" style="flex:1;padding:8px;">
+                                    <button type="button" class="btn btn-primary" onclick="uploadBannerImageForModal()">Upload</button>
+                                </div>
+                                <div id="bannerImagePreviewContainer" style="margin-top:10px;display:none;">
+                                    <img id="bannerImagePreview" src="" alt="Preview" style="max-height:150px;border-radius:4px;border:1px solid #ddd;">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Button Text</label>
+                                    <input type="text" id="bannerButtonTextInput" placeholder="Shop Now">
+                                </div>
+                                <div class="form-group">
+                                    <label>Button Link</label>
+                                    <input type="text" id="bannerButtonLinkInput" placeholder="/products or https://...">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Active</label>
+                                <select id="bannerActiveInput">
+                                    <option value="1">Yes</option>
+                                    <option value="0">No</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Sort Order (lower = earlier)</label>
+                                <input type="number" id="bannerSortOrderInput" value="0">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline" onclick="closeBannerModal()">Cancel</button>
+                            <button type="button" class="btn btn-primary" onclick="saveBanner(event)">Save Banner</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Page: Settings -->
+            <div id="page-settings" class="page-content">
+                <div class="table-container">
+                    <div class="table-header"><h3>Site Settings</h3></div>
+                    <div class="settings-grid">
+                        <div class="form-group">
+                            <label>Store Name</label>
+                            <input type="text" id="settingStoreName">
+                        </div>
+                        <div class="form-group">
+                            <label>Delivery Charge (₹)</label>
+                            <input type="number" id="settingDeliveryCharge">
+                        </div>
+                        <div class="form-group">
+                            <label>Free Delivery Threshold (₹)</label>
+                            <input type="number" id="settingFreeThreshold">
+                        </div>
+                        <div class="form-group">
+                            <label>Tax Rate (%)</label>
+                            <input type="number" step="0.01" id="settingTaxRate">
+                        </div>
+                        <div class="form-group">
+                            <label>Low Stock Threshold</label>
+                            <input type="number" id="settingLowStockThreshold">
+                        </div>
+                        <div class="form-group">
+                            <label>Admin Email (for alerts)</label>
+                            <input type="email" id="settingAdminEmail">
+                        </div>
+                    </div>
+                    <div style="padding:0 20px 20px;">
+                        <button class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
+                        <button class="btn btn-warning" onclick="checkLowStock()" style="margin-left:10px;">Check Low Stock</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page: Activity -->
+            <div id="page-activity" class="page-content">
+                <div class="table-container">
+                    <div class="table-header"><h3>Admin Activity Log</h3></div>
+                    <div id="activityLogContainer" style="padding:20px;"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Product Modal -->
+    <div id="productModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="productModalTitle">Add New Product</h2>
+                <button class="modal-close" onclick="closeProductModal()">×</button>
+            </div>
+            <form id="productForm" onsubmit="saveProduct(event)">
+                <input type="hidden" id="productId">
+                <div class="modal-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Product Name *</label>
+                            <input type="text" id="productName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Category *</label>
+                            <input type="text" id="productCategory" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Price (₹) *</label>
+                            <input type="number" id="productPrice" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Old Price (₹)</label>
+                            <input type="number" id="productOldPrice">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Stock *</label>
+                            <input type="number" id="productStock" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Icon (emoji) <span style="font-size:12px;color:#999;">(fallback if no image)</span></label>
+                            <input type="text" id="productIcon" placeholder="📦">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Product Image</label>
+                        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                            <input type="file" id="productImageInput" accept="image/*" style="flex: 1; padding: 8px; cursor: pointer;">
+                            <button type="button" class="btn btn-primary" onclick="uploadProductImage()" style="padding: 8px 16px;">
+                                <i class="fas fa-upload"></i> Upload
+                            </button>
+                            <button type="button" class="btn btn-danger" onclick="removeProductImage()" style="padding: 8px 16px;">
+                                <i class="fas fa-trash"></i> Remove
+                            </button>
+                        </div>
+                        <div style="margin-top: 8px; font-size: 12px; color: #666;">
+                            <i class="fas fa-info-circle"></i> Recommended: Square image (300x300 or larger). Max size: 2MB.
+                        </div>
+                        <div id="imagePreviewContainer" style="margin-top: 10px; display: none;">
+                            <img id="productImagePreview" src="" alt="Product Image" style="max-width: 100px; max-height: 100px; border-radius: 4px; border: 1px solid #ddd; padding: 4px;">
+                            <span id="imageFileName" style="margin-left: 10px; font-size: 13px; color: #666;"></span>
+                        </div>
+                        <input type="hidden" id="productImageUrl" value="">
+                    </div>
+                    <div class="form-group">
+                        <label>Badge (optional)</label>
+                        <input type="text" id="productBadge" placeholder="BEST SELLER, NEW, SALE">
+                    </div>
+                    <div class="form-group">
+                        <label>Description *</label>
+                        <textarea id="productDescription" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Specifications</label>
+                        <textarea id="productSpecifications" rows="3" placeholder="e.g., Battery: 5000mAh, Screen: 6.5-inch"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Highlights</label>
+                        <textarea id="productHighlights" rows="3" placeholder="e.g., • Long battery life&#10;• Fast charging&#10;• Water resistant"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" onclick="closeProductModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="saveProductBtn">Save Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Category Modal -->
+    <div id="categoryModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="categoryModalTitle">Add New Category</h2>
+                <button class="modal-close" onclick="closeCategoryModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Category Name *</label>
+                    <input type="text" id="categoryName" placeholder="Enter category name" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeCategoryModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveCategory()">Save Category</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Inventory Modal -->
+    <div id="inventoryModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Update Inventory</h2>
+                <button class="modal-close" onclick="closeInventoryModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="inventoryProductId">
+                <div class="form-group">
+                    <label>Product</label>
+                    <div id="inventoryProductName" style="font-weight:500;padding:8px 0;"></div>
+                </div>
+                <div class="form-group">
+                    <label>Current Stock</label>
+                    <div id="inventoryCurrentStock" style="font-weight:500;padding:8px 0;"></div>
+                </div>
+                <div class="form-group">
+                    <label>New Stock *</label>
+                    <input type="number" id="inventoryNewStock" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeInventoryModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveInventory()">Update Stock</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Detail Modal -->
+    <div id="orderDetailModal" class="modal-overlay">
+        <div class="modal" style="max-width:700px;">
+            <div class="modal-header">
+                <h2>Order Details</h2>
+                <button class="modal-close" onclick="closeOrderDetail()">×</button>
+            </div>
+            <div class="modal-body" id="orderDetailBody"></div>
+        </div>
+    </div>
+
+    <script src="/static/admin/admin.js"></script>
+</body>
+
+</html>
